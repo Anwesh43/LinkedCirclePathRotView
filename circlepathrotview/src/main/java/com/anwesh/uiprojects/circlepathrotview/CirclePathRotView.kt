@@ -34,6 +34,9 @@ fun Canvas.drawCPRNode(i : Int, scale : Float, paint : Paint) {
     val h : Float = height.toFloat()
     val gap : Float = w / (nodes + 1)
     val size : Float = gap / sizeFactor
+    paint.color = foreColor
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    paint.strokeCap = Paint.Cap.ROUND
     save()
     translate(gap * (i + 1), h / 2)
     for (j in 0..(paths - 1)) {
@@ -41,14 +44,15 @@ fun Canvas.drawCPRNode(i : Int, scale : Float, paint : Paint) {
         val scj1 : Float = scj.divideScale(0, paths)
         val scj2 : Float = scj.divideScale(1, paths)
         val startDeg : Float = j.deg() - 90f * scj1
-        val sweepDeg : Float = 90f * (scj1 + 1 - scj2)
+        val sweepDeg : Float = 90f * scj1 - 90f * scj2
         save()
         rotate(-90f * scj)
         paint.style = Paint.Style.FILL
-        drawCircle(0f, size, size / rFactor, paint)
+        drawCircle(0f, size * j.sf(), size / rFactor, paint)
+        restore()
         paint.style = Paint.Style.STROKE
         drawArc(RectF(-size, -size, size, size), startDeg, sweepDeg, false, paint)
-        restore()
+
     }
     restore()
 }
