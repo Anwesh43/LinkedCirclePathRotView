@@ -20,8 +20,35 @@ val strokeFactor : Int = 90
 val sizeFactor : Float = 2.9f
 val foreColor : Int = Color.parseColor("#4CAF50")
 val backColor : Int = Color.parseColor("#212121")
+val rFactor : Int = 5
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = dir * scGap
+fun Int.sf() : Float = 1f - 2 * this
+fun Int.deg() : Float = 90f + 180f * this
+
+fun Canvas.drawCPRNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = w / (nodes + 1)
+    val size : Float = gap / sizeFactor
+    save()
+    translate(gap * (i + 1), h / 2)
+    for (j in 0..(paths - 1)) {
+        val scj : Float = scale.divideScale(j, paths)
+        val scj1 : Float = scj.divideScale(0, paths)
+        val scj2 : Float = scj.divideScale(1, paths)
+        val startDeg : Float = j.deg() - 90f * scj1
+        val sweepDeg : Float = 90f * (scj1 + 1 - scj2)
+        save()
+        rotate(-90f * scj)
+        paint.style = Paint.Style.FILL
+        drawCircle(0f, size, size / rFactor, paint)
+        paint.style = Paint.Style.STROKE
+        drawArc(RectF(-size, -size, size, size), startDeg, sweepDeg, false, paint)
+        restore()
+    }
+    restore()
+}
