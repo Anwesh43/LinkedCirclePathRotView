@@ -208,4 +208,13 @@ class CirclePathRotView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : CirclePathRotView {
+            val view : CirclePathRotView = CirclePathRotView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
